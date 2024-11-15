@@ -26,11 +26,13 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen> {
   @override
   void initState() {
     super.initState();
+    // preinitialize the auth state
+    ref.read(authProvider);
     Future.delayed(const Duration(milliseconds: 700), _navigateNext);
   }
 
   void _navigateNext() {
-    final authState = ProviderScope.containerOf(context).read(authProvider);
+    final authState = ref.read(authProvider);
     if (!authState.isAuthenticated) {
       return context.goNamed(WelcomeScreen.navigation.route.name!);
     }

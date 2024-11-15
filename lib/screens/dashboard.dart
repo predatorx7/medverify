@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frog/data/user.dart';
 import 'package:frog/feature/auth/auth.dart';
+import 'package:frog/feature/link/link_document.dart';
 import 'package:frog/feature/link/validate.dart';
 import 'package:frog/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
+import 'package:frog/logging.dart';
 
 import 'browse.dart';
 
@@ -49,20 +53,43 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class LinkReportsSection extends StatefulWidget {
+class LinkReportsSection extends ConsumerStatefulWidget {
   const LinkReportsSection({super.key});
 
   @override
-  State<LinkReportsSection> createState() => _LinkReportsSectionState();
+  ConsumerState<LinkReportsSection> createState() => _LinkReportsSectionState();
 }
 
-class _LinkReportsSectionState extends State<LinkReportsSection> {
+class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
   final _urlController = TextEditingController();
 
   @override
   void dispose() {
     _urlController.dispose();
     super.dispose();
+  }
+
+  VerifiedDocument? _recentlyVerifiedDocument;
+
+  Future<void> _onUpdate(LinkDocumentVerificationUpdate update) async {
+    $logger.child('onUpdate').info('Document verification update', update);
+  }
+
+  Future<void> startVerification(String url) async {
+    final log = $logger.child('startVerification');
+    final sm = ScaffoldMessenger.of(context);
+    final linkDocumentService = ref.read(linkDocumentServiceProvider);
+    try {
+      final document = await linkDocumentService.getDocument(url, _onUpdate);
+      log.info('Document verified', document);
+      setState(() {
+        _recentlyVerifiedDocument = document;
+      });
+      sm.showSnackBar(SnackBar(content: Text('Document verified')));
+    } catch (e, s) {
+      log.severe('Error during verification', e, s);
+      sm.showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   @override
@@ -93,13 +120,19 @@ class _LinkReportsSectionState extends State<LinkReportsSection> {
                             );
                             return;
                           }
-                          // start verification
+                          startVerification(url);
                         },
                   icon: const Icon(Icons.verified),
                   label: const Text('Verify and Link Document'),
                 );
               },
             ),
+            if (_recentlyVerifiedDocument != null)
+              SingleChildScrollView(
+                child: SelectableText(
+                  json.encode(_recentlyVerifiedDocument!.properties),
+                ),
+              ),
           ],
         ),
       ),
