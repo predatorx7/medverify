@@ -7,11 +7,11 @@ part of 'user.dart';
 // **************************************************************************
 
 _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
-      dateOfBirth: json['dateOfBirth'] as String,
-      email: json['email'] as String,
+      dateOfBirth: json['dateOfBirth'] as String?,
+      email: json['email'] as String?,
       fullName: json['full_name'] as String,
-      mobile: json['mobile'] as String,
-      residentName: json['residentName'] as String,
+      mobile: json['mobile'] as String?,
+      residentName: json['residentName'] as String?,
     );
 
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>

@@ -21,15 +21,15 @@ User _$UserFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$User {
   @JsonKey(name: 'dateOfBirth')
-  String get dateOfBirth => throw _privateConstructorUsedError;
+  String? get dateOfBirth => throw _privateConstructorUsedError;
   @JsonKey(name: 'email')
-  String get email => throw _privateConstructorUsedError;
+  String? get email => throw _privateConstructorUsedError;
   @JsonKey(name: 'full_name')
   String get fullName => throw _privateConstructorUsedError;
   @JsonKey(name: 'mobile')
-  String get mobile => throw _privateConstructorUsedError;
+  String? get mobile => throw _privateConstructorUsedError;
   @JsonKey(name: 'residentName')
-  String get residentName => throw _privateConstructorUsedError;
+  String? get residentName => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -46,11 +46,11 @@ abstract class $UserCopyWith<$Res> {
       _$UserCopyWithImpl<$Res, User>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'dateOfBirth') String dateOfBirth,
-      @JsonKey(name: 'email') String email,
+      {@JsonKey(name: 'dateOfBirth') String? dateOfBirth,
+      @JsonKey(name: 'email') String? email,
       @JsonKey(name: 'full_name') String fullName,
-      @JsonKey(name: 'mobile') String mobile,
-      @JsonKey(name: 'residentName') String residentName});
+      @JsonKey(name: 'mobile') String? mobile,
+      @JsonKey(name: 'residentName') String? residentName});
 }
 
 /// @nodoc
@@ -68,33 +68,33 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? dateOfBirth = null,
-    Object? email = null,
+    Object? dateOfBirth = freezed,
+    Object? email = freezed,
     Object? fullName = null,
-    Object? mobile = null,
-    Object? residentName = null,
+    Object? mobile = freezed,
+    Object? residentName = freezed,
   }) {
     return _then(_value.copyWith(
-      dateOfBirth: null == dateOfBirth
+      dateOfBirth: freezed == dateOfBirth
           ? _value.dateOfBirth
           : dateOfBirth // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
+              as String?,
+      email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       fullName: null == fullName
           ? _value.fullName
           : fullName // ignore: cast_nullable_to_non_nullable
               as String,
-      mobile: null == mobile
+      mobile: freezed == mobile
           ? _value.mobile
           : mobile // ignore: cast_nullable_to_non_nullable
-              as String,
-      residentName: null == residentName
+              as String?,
+      residentName: freezed == residentName
           ? _value.residentName
           : residentName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ) as $Val);
   }
 }
@@ -107,11 +107,11 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'dateOfBirth') String dateOfBirth,
-      @JsonKey(name: 'email') String email,
+      {@JsonKey(name: 'dateOfBirth') String? dateOfBirth,
+      @JsonKey(name: 'email') String? email,
       @JsonKey(name: 'full_name') String fullName,
-      @JsonKey(name: 'mobile') String mobile,
-      @JsonKey(name: 'residentName') String residentName});
+      @JsonKey(name: 'mobile') String? mobile,
+      @JsonKey(name: 'residentName') String? residentName});
 }
 
 /// @nodoc
@@ -126,65 +126,66 @@ class __$$UserImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? dateOfBirth = null,
-    Object? email = null,
+    Object? dateOfBirth = freezed,
+    Object? email = freezed,
     Object? fullName = null,
-    Object? mobile = null,
-    Object? residentName = null,
+    Object? mobile = freezed,
+    Object? residentName = freezed,
   }) {
     return _then(_$UserImpl(
-      dateOfBirth: null == dateOfBirth
+      dateOfBirth: freezed == dateOfBirth
           ? _value.dateOfBirth
           : dateOfBirth // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
+              as String?,
+      email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       fullName: null == fullName
           ? _value.fullName
           : fullName // ignore: cast_nullable_to_non_nullable
               as String,
-      mobile: null == mobile
+      mobile: freezed == mobile
           ? _value.mobile
           : mobile // ignore: cast_nullable_to_non_nullable
-              as String,
-      residentName: null == residentName
+              as String?,
+      residentName: freezed == residentName
           ? _value.residentName
           : residentName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$UserImpl implements _User {
+class _$UserImpl extends _User {
   const _$UserImpl(
-      {@JsonKey(name: 'dateOfBirth') required this.dateOfBirth,
-      @JsonKey(name: 'email') required this.email,
+      {@JsonKey(name: 'dateOfBirth') this.dateOfBirth,
+      @JsonKey(name: 'email') this.email,
       @JsonKey(name: 'full_name') required this.fullName,
-      @JsonKey(name: 'mobile') required this.mobile,
-      @JsonKey(name: 'residentName') required this.residentName});
+      @JsonKey(name: 'mobile') this.mobile,
+      @JsonKey(name: 'residentName') this.residentName})
+      : super._();
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
 
   @override
   @JsonKey(name: 'dateOfBirth')
-  final String dateOfBirth;
+  final String? dateOfBirth;
   @override
   @JsonKey(name: 'email')
-  final String email;
+  final String? email;
   @override
   @JsonKey(name: 'full_name')
   final String fullName;
   @override
   @JsonKey(name: 'mobile')
-  final String mobile;
+  final String? mobile;
   @override
   @JsonKey(name: 'residentName')
-  final String residentName;
+  final String? residentName;
 
   @override
   String toString() {
@@ -227,32 +228,32 @@ class _$UserImpl implements _User {
   }
 }
 
-abstract class _User implements User {
+abstract class _User extends User {
   const factory _User(
-          {@JsonKey(name: 'dateOfBirth') required final String dateOfBirth,
-          @JsonKey(name: 'email') required final String email,
-          @JsonKey(name: 'full_name') required final String fullName,
-          @JsonKey(name: 'mobile') required final String mobile,
-          @JsonKey(name: 'residentName') required final String residentName}) =
-      _$UserImpl;
+      {@JsonKey(name: 'dateOfBirth') final String? dateOfBirth,
+      @JsonKey(name: 'email') final String? email,
+      @JsonKey(name: 'full_name') required final String fullName,
+      @JsonKey(name: 'mobile') final String? mobile,
+      @JsonKey(name: 'residentName') final String? residentName}) = _$UserImpl;
+  const _User._() : super._();
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
   @override
   @JsonKey(name: 'dateOfBirth')
-  String get dateOfBirth;
+  String? get dateOfBirth;
   @override
   @JsonKey(name: 'email')
-  String get email;
+  String? get email;
   @override
   @JsonKey(name: 'full_name')
   String get fullName;
   @override
   @JsonKey(name: 'mobile')
-  String get mobile;
+  String? get mobile;
   @override
   @JsonKey(name: 'residentName')
-  String get residentName;
+  String? get residentName;
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.

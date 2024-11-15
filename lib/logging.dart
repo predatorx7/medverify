@@ -29,6 +29,10 @@ extension LoggerExtension on Logger {
   }
 }
 
+extension LoggerObjectExtension on Object {
+  Logger get $logger => logging.child(runtimeType.toString());
+}
+
 final _dioClient = buildDio();
 
 final _loggingApi = Uri.parse(
