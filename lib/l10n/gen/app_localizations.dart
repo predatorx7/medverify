@@ -345,6 +345,18 @@ abstract class AppLocalizations {
   /// **'Unnamed Place'**
   String get unnamedPlace;
 
+  /// No description provided for @provideTheDocumentUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide the document URL'**
+  String get provideTheDocumentUrl;
+
+  /// No description provided for @makeSureUrlIsValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure the URL is valid'**
+  String get makeSureUrlIsValid;
+
   /// No description provided for @unnamedRoom.
   ///
   /// In en, this message translates to:

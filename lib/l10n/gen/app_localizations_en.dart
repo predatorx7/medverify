@@ -149,6 +149,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unnamedPlace => 'Unnamed Place';
 
   @override
+  String get provideTheDocumentUrl => 'Provide the document URL';
+
+  @override
+  String get makeSureUrlIsValid => 'Make sure the URL is valid';
+
+  @override
   String get unnamedRoom => 'Unnamed Room';
 
   @override

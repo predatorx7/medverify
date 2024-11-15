@@ -52,6 +52,8 @@
     "addRoom": "Add Room",
     "noPlacesToShow": "No Places to show",
     "unnamedPlace": "Unnamed Place",
+    "provideTheDocumentUrl": "Provide the document URL",
+    "makeSureUrlIsValid": "Make sure the URL is valid",
     "unnamedRoom": "Unnamed Room",
     "unnamedDevice": "Unnamed Device",
     "noDevicesAvailable": "No Devices available",
