@@ -54,6 +54,7 @@ class ReportsScreen extends ConsumerWidget {
                 onReports: (
                   ({String attestationId, String receiverId}) value,
                 ) async {
+                  print({'ShareReportsSection.value': value});
                   final success =
                       report.shareProof(ref.read(authProvider.notifier), value);
                 },
@@ -107,14 +108,19 @@ class _SeekReportsScreenState extends ConsumerState<ShareReportsSection>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-
-    _subscription = controller.barcodes.listen(_handleBarcode);
+    attach();
 
     unawaited(controller.start());
   }
 
+  void attach() {
+    print({'ShareReportsSection.attach': 'attaching'});
+    _subscription = controller.barcodes.listen(_handleBarcode);
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    print({'ShareReportsSection.didChangeAppLifecycleState': state});
     if (!controller.value.hasCameraPermission) {
       return;
     }
@@ -125,7 +131,7 @@ class _SeekReportsScreenState extends ConsumerState<ShareReportsSection>
       case AppLifecycleState.paused:
         return;
       case AppLifecycleState.resumed:
-        _subscription = controller.barcodes.listen(_handleBarcode);
+        attach();
 
         unawaited(controller.start());
       case AppLifecycleState.inactive:
@@ -138,6 +144,7 @@ class _SeekReportsScreenState extends ConsumerState<ShareReportsSection>
   Barcode? _barcode;
 
   void _handleBarcode(BarcodeCapture barcodes) {
+    print({'ShareReportsSection._handleBarcode': 'did receive barcodes'});
     print(barcodes.barcodes.firstOrNull);
     if (mounted) {
       setState(() {
@@ -151,6 +158,7 @@ class _SeekReportsScreenState extends ConsumerState<ShareReportsSection>
   }
 
   void _onBarcodeFound(Barcode barcode) {
+    print('on barcode found');
     print(barcode);
     final bytes = barcode.rawBytes;
     if (bytes == null) return;

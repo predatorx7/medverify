@@ -56,7 +56,9 @@ class Report {
       final publicKey = auth.publicKey ??
           "0x925978064717107d621d0fb2c8e68b8809f8cfd8b046c84d0fee6b68cbc5f68e";
       final response = await _reportAdditionClient.post(
-        Uri.parse(String.fromEnvironment('RECLAIM_ATTESTATION_CALLBACK_URL')),
+        Uri.parse(String.fromEnvironment('RECLAIM_ATTESTATION_CALLBACK_URL',
+            defaultValue:
+                'https://d07a-49-237-11-168.ngrok-free.app/api/remoteAttestation')),
         body: json.encode({
           "imgProof": file.attestationOutput.toJson(),
           "aiProof": document.attestationOutput.toJson(),
