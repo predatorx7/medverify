@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:healtheye/feature/auth/auth.dart';
 import 'package:healtheye/logging.dart';
 import 'package:reclaim_flutter_sdk/attestor_webview.dart';
 import 'package:reclaim_flutter_sdk/reclaim_flutter_sdk.dart';
@@ -86,8 +87,15 @@ class LinkDocumentFileVerificationUpdate {
 }
 
 class LinkDocumentService {
+  final Ref ref;
+
+  AuthNotifier get auth => ref.read(authProvider.notifier);
+
+  const LinkDocumentService({required this.ref});
+
   static const _reclaimOpenAiApiKey =
       String.fromEnvironment('RECLAIM_OPENAI_API_KEY');
+
   Future<VerifiedFile> getFileAttestation(
     String fileUrl,
     void Function(LinkDocumentFileVerificationUpdate data) onUpdate,
@@ -180,7 +188,7 @@ class LinkDocumentService {
           },
           "authorisationHeader": ""
         },
-        "ownerPrivateKey":
+        "ownerPrivateKey": //auth.state.keys?.publicKey ??
             "0x925978064717107d621d0fb2c8e68b8809f8cfd8b046c84d0fee6b68cbc5f68e",
         "client": {
           "url": "wss://witness.reclaimprotocol.org/ws",
@@ -201,5 +209,5 @@ class LinkDocumentService {
 }
 
 final linkDocumentServiceProvider = Provider((ref) {
-  return LinkDocumentService();
+  return LinkDocumentService(ref: ref);
 });

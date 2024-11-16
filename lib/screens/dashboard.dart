@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:healtheye/data/user.dart';
@@ -46,7 +48,7 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: const Text('Your Reports'),
         actions: [
           IconButton(
             icon: const Icon(Icons.qr_code_scanner),
@@ -81,24 +83,26 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          UserProfileCard(user: user),
-          LinkReportsSection(),
+      body: CustomScrollView(
+        slivers: [
+          UserProfileCardSliver(user: user),
+          LinkReportsSectionSliver(),
+          UserReportsListSliver(),
         ],
       ),
     );
   }
 }
 
-class LinkReportsSection extends ConsumerStatefulWidget {
-  const LinkReportsSection({super.key});
+class LinkReportsSectionSliver extends ConsumerStatefulWidget {
+  const LinkReportsSectionSliver({super.key});
 
   @override
-  ConsumerState<LinkReportsSection> createState() => _LinkReportsSectionState();
+  ConsumerState<LinkReportsSectionSliver> createState() =>
+      _LinkReportsSectionState();
 }
 
-class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
+class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
   final _urlController = TextEditingController();
 
   @override
@@ -167,16 +171,23 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            MedicalReportUrlInput(controller: _urlController),
-            const SizedBox(height: 16),
-            AnimatedBuilder(
+    return SliverPadding(
+      padding: const EdgeInsets.all(16.0),
+      sliver: SliverMainAxisGroup(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Form(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: MedicalReportUrlInput(
+                  controller: _urlController,
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: AnimatedBuilder(
               animation: _urlController,
               builder: (context, snapshot) {
                 final url = _urlController.text.trim();
@@ -203,25 +214,25 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
                 );
               },
             ),
-            Expanded(child: UserReportsList()),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class UserReportsList extends ConsumerWidget {
-  const UserReportsList({super.key});
+class UserReportsListSliver extends ConsumerWidget {
+  const UserReportsListSliver({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reports = ref.watch(userReportsProvider);
-    return GridView.builder(
+    return SliverGrid.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
         childAspectRatio: 1.5,
       ),
+      itemCount: reports.length,
       itemBuilder: (context, index) {
         final report = reports[index];
         return ReportCard(
@@ -253,33 +264,35 @@ class ReportCard extends StatelessWidget {
         footer: Text(DateFormat('dd MMM, yyyy').format(report.createdAt)),
         child: AspectRatio(
           aspectRatio: 1,
-          child: Image.network(report.file.documentUrl),
+          child: Image.memory(base64.decode(report.file.base64Data)),
         ),
       ),
     );
   }
 }
 
-class UserProfileCard extends StatelessWidget {
+class UserProfileCardSliver extends StatelessWidget {
   final User user;
 
-  const UserProfileCard({
+  const UserProfileCardSliver({
     super.key,
     required this.user,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            const UserAvatar(),
-            const SizedBox(width: 16),
-            UserInfo(user: user),
-          ],
+    return SliverToBoxAdapter(
+      child: Card(
+        margin: const EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              const UserAvatar(),
+              const SizedBox(width: 16),
+              UserInfo(user: user),
+            ],
+          ),
         ),
       ),
     );
