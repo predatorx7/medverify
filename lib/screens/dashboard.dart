@@ -1,17 +1,19 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:healtheye/data/user.dart';
 import 'package:healtheye/feature/auth/auth.dart';
 import 'package:healtheye/feature/link/link_document.dart';
 import 'package:healtheye/feature/link/validate.dart';
+import 'package:healtheye/feature/reports/data/report.dart';
+import 'package:healtheye/feature/reports/reports.dart';
 import 'package:healtheye/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:healtheye/logging.dart';
+import 'package:healtheye/screens/seek_reports.dart';
+import 'package:intl/intl.dart';
 
-import 'browse.dart';
+import 'reports.dart';
 
 class _Navigation {
   final route = GoRoute(
@@ -26,7 +28,8 @@ class _Navigation {
     name: 'dashboard',
     builder: (context, state) => const DashboardScreen(),
     routes: [
-      BrowseScreen.navigation.router,
+      ReportsScreen.navigation.route,
+      SeekReportsScreen.navigation.route,
     ],
   );
 }
@@ -42,7 +45,42 @@ class DashboardScreen extends ConsumerWidget {
     final user = auth.user!;
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            onPressed: () {
+              context.goNamed('seek-reports');
+            },
+            tooltip: 'Scan QR Code',
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {
+              // Show profile menu
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  MediaQuery.of(context).size.width,
+                  kToolbarHeight,
+                  0,
+                  0,
+                ),
+                items: [
+                  PopupMenuItem(
+                    child: const Text('Sign Out'),
+                    onTap: () {
+                      ref.read(authProvider.notifier).signOut();
+                    },
+                  ),
+                ],
+              );
+            },
+            tooltip: 'Profile Menu',
+          ),
+        ],
+      ),
       body: Column(
         children: [
           UserProfileCard(user: user),
@@ -107,12 +145,20 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
     final linkDocumentService = ref.read(linkDocumentServiceProvider);
     try {
       final document = await linkDocumentService.getDocument(
-          url, file, _onDocumentVerificationUpdate);
+        url,
+        file,
+        _onDocumentVerificationUpdate,
+      );
+
       log.info('Document verified', document);
+
       setState(() {
         _recentlyVerifiedDocument = document;
       });
+
       sm.showSnackBar(SnackBar(content: Text('Document verified')));
+
+      ref.read(userReportsProvider.notifier).addReport(file, document);
     } catch (e, s) {
       log.severe('Error during verification', e, s);
       sm.showSnackBar(SnackBar(content: Text(e.toString())));
@@ -157,25 +203,57 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
                 );
               },
             ),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: 200,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    if (_recentlyVerifiedDocument != null)
-                      SelectableText(
-                        json.encode(_recentlyVerifiedDocument!.properties),
-                      ),
-                    const Divider(),
-                    if (_recentlyVerifiedFile != null)
-                      SelectableText(_recentlyVerifiedFile!.documentUrl),
-                  ],
-                ),
-              ),
-            ),
+            Expanded(child: UserReportsList()),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class UserReportsList extends ConsumerWidget {
+  const UserReportsList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reports = ref.watch(userReportsProvider);
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,
+        childAspectRatio: 1.5,
+      ),
+      itemBuilder: (context, index) {
+        final report = reports[index];
+        return ReportCard(
+          report: report,
+        );
+      },
+    );
+  }
+}
+
+class ReportCard extends StatelessWidget {
+  final Report report;
+
+  const ReportCard({super.key, required this.report});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        context.goNamed('report', pathParameters: {
+          'report_id': report.id,
+        });
+      },
+      child: GridTile(
+        header: GridTileBar(
+          title: Text(report.title),
+          subtitle: Text(report.description),
+        ),
+        footer: Text(DateFormat('dd MMM, yyyy').format(report.createdAt)),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Image.network(report.file.documentUrl),
         ),
       ),
     );

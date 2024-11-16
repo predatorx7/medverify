@@ -8,9 +8,11 @@ import 'package:healtheye/util.dart';
 
 import 'logging.dart';
 import 'router/router.dart';
+import 'serializers.dart';
 
 void main() async {
   initializeAppLogging();
+  setupHandleJsonModelSerializer();
 
   runApp(
     const ProviderScope(

@@ -20,7 +20,6 @@ class LaunchScreen extends ConsumerStatefulWidget {
     super.key,
   });
 
-
   static final navigation = _Navigation();
 
   @override
@@ -87,7 +86,7 @@ class _AnimatingSplashState extends ConsumerState<_AnimatingSplash> {
   void initState() {
     super.initState();
     start();
-   // good place to initialize some providers
+    // good place to initialize some providers
   }
 
   void start() async {
@@ -119,8 +118,7 @@ class _AnimatingSplashState extends ConsumerState<_AnimatingSplash> {
               child: const DecoratedBox(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(
-                        'assets/brand/brand.png'),
+                    image: AssetImage('assets/brand/brand.png'),
                   ),
                 ),
                 child: SizedBox(

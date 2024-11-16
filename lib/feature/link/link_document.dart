@@ -146,8 +146,31 @@ class LinkDocumentService {
           "responseRedactions": [
             {"regex": "(?<data>.*)"}
           ],
-          "body":
-              "{\"stream\":false,\"model\":\"gpt-4o-mini\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Determine if the person has HAV. Return the result in JSON format with the person's name and a field indicating whether they are positive (true/false). For example:\\n                         { \\\"name\\\": \\\"John\\\", \\\"isPositive\\\":\\\"true/false\\\"} Provide the output in this format\"},{\"type\":\"image_url\",\"image_url\":{\"url\":\"${imageUrl}\",\"detail\":\"high\"}}]}]}"
+          "body": json.encode(
+            {
+              "stream": false,
+              "model": "gpt-4o-mini",
+              "messages": [
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text":
+                          "Determine if the person has the disease for example: HAV. Return the result in JSON format with the person's name and a field indicating whether they are positive (true/false). For example:\n                         { \"name\": \"John\", \"report_title\": \"HAV Report\", \"description\": \"HAV Report\", \"isPositive\":\"true/false\"} Provide the output in this format"
+                    },
+                    {
+                      "type": "image_url",
+                      "image_url": {
+                        "url": imageUrl,
+                        "detail": "high",
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ),
         },
         "secretParams": {
           "paramValues": "",
