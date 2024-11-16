@@ -7,12 +7,18 @@ import 'package:reclaim_flutter_sdk/reclaim_flutter_sdk.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'success_screen.dart';
+import 'failure_screen.dart';
 
 class _Navigation {
   final route = GoRoute(
     path: 'seek',
     name: 'seek-reports',
     builder: (context, state) => const SeekReportsScreen(),
+    routes: [
+      SeekReportsSuccessScreen.route,
+      SeekReportsFailureScreen.route,
+    ],
   );
 }
 
@@ -31,9 +37,11 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
   bool _isPolling = false;
 
   String? get publicKey => ref.watch(authProvider).keys?.publicKey;
+  String? get walletPublicKeyFuture =>
+      ref.watch(authProvider).keys?.walletKeyPair.publicKey;
 
   // Combine public key and attestation ID with # separator
-  String get qrData => '$publicKey#$referenceId';
+  String get qrData => '$publicKey#$referenceId#$walletPublicKeyFuture';
 
   @override
   void initState() {
@@ -100,7 +108,16 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
     setState(() {
       _isPolling = false;
     });
-    // Add any additional logic for handling the received report
+
+    if (sharedResult != null && mounted) {
+      // Navigate to success or failure page based on the result
+      if (sharedResult['status'] == 'success') {
+        context.go(
+            '/dashboard/seek/success?attestorId=${sharedResult['attestorId']}');
+      } else {
+        context.go('/dashboard/seek/failure');
+      }
+    }
   }
 
   @override

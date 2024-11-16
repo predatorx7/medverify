@@ -57,9 +57,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               ),
               const SizedBox(height: 24),
               ShareReportsSection(
-                onReports: (
-                  ({String attestationId, String receiverId}) value,
-                ) async {
+                onReports: (ShareReportsResponse value) async {
                   try {
                     if (_loading) return;
                     _loading = true;
@@ -97,8 +95,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     );
   }
 }
-
-typedef ShareReportsResponse = ({String attestationId, String receiverId});
 
 class ShareReportsSection extends ConsumerStatefulWidget {
   const ShareReportsSection({
@@ -185,9 +181,12 @@ class _SeekReportsScreenState extends ConsumerState<ShareReportsSection>
     if (bytes == null) return;
     final decoded = utf8.decode(bytes);
     final parts = decoded.split('#');
-    final [receiverId, attestationId] = parts;
-    final ShareReportsResponse response =
-        (receiverId: receiverId, attestationId: attestationId);
+    final [receiverId, attestationId, publicJWK] = parts;
+    final ShareReportsResponse response = (
+      receiverId: receiverId,
+      attestationId: attestationId,
+      publicJWK: publicJWK,
+    );
     // context.pop(response);
     widget.onReports(response);
   }

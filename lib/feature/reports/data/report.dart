@@ -64,6 +64,7 @@ class Report {
           "fromAddress": publicKey,
           "toAddress": recipientResponse.receiverId,
           "referenceId": recipientResponse.attestationId,
+          "publicJWK": recipientResponse.publicJWK,
         }),
       );
       $logger.child('shareProof').info({

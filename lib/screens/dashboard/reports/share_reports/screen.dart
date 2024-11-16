@@ -14,7 +14,11 @@ class _Navigation {
   );
 }
 
-typedef ShareReportsResponse = ({String attestationId, String receiverId});
+typedef ShareReportsResponse = ({
+  String attestationId,
+  String receiverId,
+  String publicJWK
+});
 
 class ShareReportsScreen extends ConsumerStatefulWidget {
   const ShareReportsScreen({super.key});
@@ -89,9 +93,12 @@ class _SeekReportsScreenState extends ConsumerState<ShareReportsScreen>
     if (bytes == null) return;
     final decoded = utf8.decode(bytes);
     final parts = decoded.split('#');
-    final [receiverId, attestationId] = parts;
-    final ShareReportsResponse response =
-        (receiverId: receiverId, attestationId: attestationId);
+    final [receiverId, attestationId, publicJWK] = parts;
+    final ShareReportsResponse response = (
+      receiverId: receiverId,
+      attestationId: attestationId,
+      publicJWK: publicJWK
+    );
     context.pop(response);
   }
 
