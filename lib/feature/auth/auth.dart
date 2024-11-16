@@ -8,14 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/auth.dart';
 
-final authProvider =
-    NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+final authProvider = NotifierProvider<AuthManager, AuthState>(AuthManager.new);
 
 final ValueListenable<AuthState> authChangeNotifier =
     ValueNotifier<AuthState>(const AuthState.unauthenticated());
 
-class AuthNotifier extends Notifier<AuthState> {
-  AuthNotifier();
+class AuthManager extends Notifier<AuthState> {
+  AuthManager();
+
+  String? get publicKey => state.keys?.publicKey;
 
   @override
   AuthState build() {

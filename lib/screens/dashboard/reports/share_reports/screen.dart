@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,22 +8,24 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 class _Navigation {
   final route = GoRoute(
-    path: 'seek-reports',
-    name: 'seek-reports',
-    builder: (context, state) => const SeekReportsScreen(),
+    path: 'share',
+    name: 'share',
+    builder: (context, state) => const ShareReportsScreen(),
   );
 }
 
-class SeekReportsScreen extends ConsumerStatefulWidget {
-  const SeekReportsScreen({super.key});
+typedef ShareReportsResponse = ({String attestationId, String receiverId});
+
+class ShareReportsScreen extends ConsumerStatefulWidget {
+  const ShareReportsScreen({super.key});
 
   static final navigation = _Navigation();
 
   @override
-  ConsumerState<SeekReportsScreen> createState() => _SeekReportsScreenState();
+  ConsumerState<ShareReportsScreen> createState() => _SeekReportsScreenState();
 }
 
-class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen>
+class _SeekReportsScreenState extends ConsumerState<ShareReportsScreen>
     with WidgetsBindingObserver {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   final controller = MobileScannerController(
@@ -71,9 +74,25 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen>
     print(barcodes.barcodes.firstOrNull);
     if (mounted) {
       setState(() {
-        _barcode = barcodes.barcodes.firstOrNull;
+        final barcode = barcodes.barcodes.firstOrNull;
+        _barcode = barcode;
+        if (barcode != null) {
+          _onBarcodeFound(barcode);
+        }
       });
     }
+  }
+
+  void _onBarcodeFound(Barcode barcode) {
+    print(barcode);
+    final bytes = barcode.rawBytes;
+    if (bytes == null) return;
+    final decoded = utf8.decode(bytes);
+    final parts = decoded.split('#');
+    final [receiverId, attestationId] = parts;
+    final ShareReportsResponse response =
+        (receiverId: receiverId, attestationId: attestationId);
+    context.pop(response);
   }
 
   @override

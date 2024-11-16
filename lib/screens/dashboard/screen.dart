@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:healtheye/components/you_qr.dart';
 import 'package:healtheye/data/user.dart';
 import 'package:healtheye/feature/auth/auth.dart';
 import 'package:healtheye/feature/link/link_document.dart';
@@ -12,10 +13,10 @@ import 'package:healtheye/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:healtheye/logging.dart';
-import 'package:healtheye/screens/seek_reports.dart';
+import 'package:healtheye/screens/dashboard/seek_reports/screen.dart';
 import 'package:intl/intl.dart';
 
-import 'reports.dart';
+import 'reports/screen.dart';
 
 class _Navigation {
   final route = GoRoute(
@@ -55,7 +56,7 @@ class DashboardScreen extends ConsumerWidget {
             onPressed: () {
               context.goNamed('seek-reports');
             },
-            tooltip: 'Scan QR Code',
+            tooltip: 'Share Reports',
           ),
           IconButton(
             icon: const Icon(Icons.account_circle),

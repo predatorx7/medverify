@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:healtheye/feature/auth/auth.dart';
-import 'package:healtheye/screens/dashboard.dart';
+import 'package:healtheye/screens/dashboard/screen.dart';
 import 'package:healtheye/screens/welcome.dart';
 import 'package:go_router/go_router.dart';
 

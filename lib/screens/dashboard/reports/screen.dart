@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:healtheye/feature/auth/auth.dart';
 import 'package:healtheye/feature/reports/reports.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:healtheye/screens/dashboard/reports/share_reports/screen.dart';
 
 class _Navigation {
   final route = GoRoute(
     path: 'report/:report_id',
     name: 'report',
     builder: (context, state) => const ReportsScreen(),
+    routes: [
+      ShareReportsScreen.navigation.route,
+    ],
   );
 }
 
@@ -27,6 +31,28 @@ class ReportsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(report.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () async {
+              try {
+                final ShareReportsResponse? recipientResponse =
+                    await context.pushNamed(
+                  'share-report',
+                  pathParameters: {'report_id': reportId},
+                );
+                if (recipientResponse != null) {
+                  final success = report.shareProof(
+                      ref.read(authProvider.notifier), recipientResponse);
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error generating share proof: $e')),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -43,11 +69,6 @@ class ReportsScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 16),
-                    QrImageView(
-                      data: reportId,
-                      version: QrVersions.auto,
-                      size: 200.0,
-                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Report ID: $reportId',

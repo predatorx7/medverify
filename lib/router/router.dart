@@ -1,5 +1,5 @@
 import 'package:healtheye/feature/auth/auth.dart';
-import 'package:healtheye/screens/dashboard.dart';
+import 'package:healtheye/screens/dashboard/screen.dart';
 import 'package:healtheye/screens/launch.dart';
 import 'package:healtheye/screens/signup/signup.dart';
 import 'package:healtheye/screens/welcome.dart';

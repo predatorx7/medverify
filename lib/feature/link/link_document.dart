@@ -45,6 +45,14 @@ class VerifiedFile {
   String get documentUrl {
     return 'data:image/png;base64,$base64Data';
   }
+
+  factory VerifiedFile.fromJson(Map<String, dynamic> json) {
+    return VerifiedFile(attestationOutput: CreateClaimOutput.fromJson(json));
+  }
+
+  Map<String, dynamic> toJson() {
+    return attestationOutput.toJson();
+  }
 }
 
 class VerifiedDocument {
@@ -72,6 +80,15 @@ class VerifiedDocument {
   }
 
   const VerifiedDocument({required this.attestationOutput});
+
+  factory VerifiedDocument.fromJson(Map<String, dynamic> json) {
+    return VerifiedDocument(
+        attestationOutput: CreateClaimOutput.fromJson(json));
+  }
+
+  Map<String, dynamic> toJson() {
+    return attestationOutput.toJson();
+  }
 }
 
 class LinkDocumentVerificationUpdate {
@@ -89,7 +106,7 @@ class LinkDocumentFileVerificationUpdate {
 class LinkDocumentService {
   final Ref ref;
 
-  AuthNotifier get auth => ref.read(authProvider.notifier);
+  AuthManager get auth => ref.read(authProvider.notifier);
 
   const LinkDocumentService({required this.ref});
 

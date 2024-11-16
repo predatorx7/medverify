@@ -42,8 +42,10 @@ class WelcomeScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.displaySmall,
                   ),
                   const SizedBox(height: 16),
-                  Text('Start your journey with us',
-                      style: Theme.of(context).textTheme.bodyLarge),
+                  Text(
+                    'Start your journey with us',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                 ],
               ),
               const Spacer(),
