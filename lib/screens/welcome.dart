@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frog/screens/signup/signup.dart';
+import 'package:healtheye/screens/signup/signup.dart';
 import 'package:go_router/go_router.dart';
 
 class _Navigation {
@@ -18,7 +18,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

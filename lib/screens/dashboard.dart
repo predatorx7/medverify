@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frog/data/user.dart';
-import 'package:frog/feature/auth/auth.dart';
-import 'package:frog/feature/link/link_document.dart';
-import 'package:frog/feature/link/validate.dart';
-import 'package:frog/l10n/l10n.dart';
+import 'package:healtheye/data/user.dart';
+import 'package:healtheye/feature/auth/auth.dart';
+import 'package:healtheye/feature/link/link_document.dart';
+import 'package:healtheye/feature/link/validate.dart';
+import 'package:healtheye/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
-import 'package:frog/logging.dart';
+import 'package:healtheye/logging.dart';
 
 import 'browse.dart';
 
@@ -70,17 +70,44 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
   }
 
   VerifiedDocument? _recentlyVerifiedDocument;
+  VerifiedFile? _recentlyVerifiedFile;
 
-  Future<void> _onUpdate(LinkDocumentVerificationUpdate update) async {
-    $logger.child('onUpdate').info('Document verification update', update);
+  Future<void> _onDocumentVerificationUpdate(
+      LinkDocumentVerificationUpdate update) async {
+    $logger.child('_onDocumentVerificationUpdate').info(update.info);
   }
 
-  Future<void> startVerification(String url) async {
+  Future<void> _onFileVerificationUpdate(
+      LinkDocumentFileVerificationUpdate update) async {
+    $logger.child('_onFileVerificationUpdate').info(update.file);
+  }
+
+  Future<void> startFileVerification(String url) async {
     final log = $logger.child('startVerification');
     final sm = ScaffoldMessenger.of(context);
     final linkDocumentService = ref.read(linkDocumentServiceProvider);
     try {
-      final document = await linkDocumentService.getDocument(url, _onUpdate);
+      final file = await linkDocumentService.getFileAttestation(
+          url, _onFileVerificationUpdate);
+      log.info('File verified', file);
+      setState(() {
+        _recentlyVerifiedFile = file;
+      });
+      sm.showSnackBar(SnackBar(content: Text('File verified')));
+    } catch (e, s) {
+      log.severe('Error during verification', e, s);
+      sm.showSnackBar(SnackBar(content: Text(e.toString())));
+      rethrow;
+    }
+  }
+
+  Future<void> startDocumentVerification(String url, VerifiedFile file) async {
+    final log = $logger.child('startVerification');
+    final sm = ScaffoldMessenger.of(context);
+    final linkDocumentService = ref.read(linkDocumentServiceProvider);
+    try {
+      final document = await linkDocumentService.getDocument(
+          url, file, _onDocumentVerificationUpdate);
       log.info('Document verified', document);
       setState(() {
         _recentlyVerifiedDocument = document;
@@ -120,19 +147,34 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSection> {
                             );
                             return;
                           }
-                          startVerification(url);
+                          startFileVerification(url).then((_) {
+                            startDocumentVerification(
+                                url, _recentlyVerifiedFile!);
+                          });
                         },
                   icon: const Icon(Icons.verified),
                   label: const Text('Verify and Link Document'),
                 );
               },
             ),
-            if (_recentlyVerifiedDocument != null)
-              SingleChildScrollView(
-                child: SelectableText(
-                  json.encode(_recentlyVerifiedDocument!.properties),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: 200,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (_recentlyVerifiedDocument != null)
+                      SelectableText(
+                        json.encode(_recentlyVerifiedDocument!.properties),
+                      ),
+                    const Divider(),
+                    if (_recentlyVerifiedFile != null)
+                      SelectableText(_recentlyVerifiedFile!.documentUrl),
+                  ],
                 ),
               ),
+            ),
           ],
         ),
       ),

@@ -1,24 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frog/data/user.dart';
+import 'package:healtheye/data/user.dart';
+import 'package:healtheye/feature/wallet/user_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'auth.freezed.dart';
-
-@freezed
-class AuthState with _$AuthState {
-  const AuthState._();
-
-  const factory AuthState.authenticated(User user) = _Authenticated;
-  const factory AuthState.unauthenticated() = _Unauthenticated;
-
-  bool get isAuthenticated => this is _Authenticated;
-  User? get user =>
-      this is _Authenticated ? (this as _Authenticated).user : null;
-}
+import 'data/auth.dart';
 
 final authProvider =
     NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
@@ -35,8 +23,16 @@ class AuthNotifier extends Notifier<AuthState> {
     return authChangeNotifier.value;
   }
 
-  void setCredentials(User user) {
-    state = AuthState.authenticated(user);
+  void setCredentials(User user) async {
+    state = AuthState.processing(user);
+    _loadKeysFromWallet(user);
+  }
+
+  void _loadKeysFromWallet(User user) async {
+    final keys = await UserKeys.fetch(user);
+    final current = state.user;
+    if (current == null) return;
+    state = AuthState.authenticated(current, keys);
   }
 
   final _preference = SharedPreferences.getInstance();
@@ -47,7 +43,9 @@ class AuthNotifier extends Notifier<AuthState> {
     final preference = await _preference;
     final userJson = preference.getString(_userPersistenceKey);
     if (userJson != null) {
-      state = AuthState.authenticated(User.fromJson(jsonDecode(userJson)));
+      final user = User.fromJson(jsonDecode(userJson));
+      state = AuthState.processing(user);
+      _loadKeysFromWallet(user);
     }
   }
 

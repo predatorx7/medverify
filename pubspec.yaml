@@ -1,5 +1,5 @@
-name: frog
-description: "A new Flutter project."
+name: healtheye
+description: A user health verification app
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -57,6 +57,13 @@ dependencies:
   shared_preferences: ^2.3.3
   handle: ^0.4.0
   firebase_ui_localizations: ^1.13.0
+  flutter_animate: ^4.5.0
+  nfc_manager: ^3.5.0
+  qr_flutter: ^4.1.0
+  crypto: ^3.0.6
+  web3dart: ^2.7.3
+  pointycastle: ^3.9.1
+  dio: ^5.7.0
 
 dev_dependencies:
   flutter_test:

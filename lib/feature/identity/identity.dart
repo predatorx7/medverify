@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frog/data/user.dart';
+import 'package:healtheye/data/user.dart';
 
 import 'package:flutter/material.dart' show BuildContext;
 import 'country/in.dart';

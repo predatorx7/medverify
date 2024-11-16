@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:frog/data/user.dart';
-import 'package:frog/feature/identity/identity.dart';
-import 'package:frog/logging.dart';
+import 'package:healtheye/data/user.dart';
+import 'package:healtheye/feature/identity/identity.dart';
+import 'package:healtheye/logging.dart';
 import 'package:gnarkprover/gnarkprover.dart';
 import 'package:reclaim_flutter_sdk/reclaim_flutter_sdk.dart';
 
@@ -27,6 +27,8 @@ class ReclaimIndianIdentityService implements UserIdentityService {
     // This can also be done in the `main` function.
     // Calling this more than once is safe.
     Gnarkprover.getInstance();
+
+    await Flags.setCookiePersist(true);
 
     final reclaimVerification = ReclaimVerification(
       buildContext: context,

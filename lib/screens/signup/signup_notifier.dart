@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frog/feature/auth/auth.dart';
-import 'package:frog/feature/identity/identity.dart';
-import 'package:frog/logging.dart';
+import 'package:healtheye/feature/auth/auth.dart';
+import 'package:healtheye/feature/identity/identity.dart';
+import 'package:healtheye/logging.dart';
 
 import 'signup_state.dart';
 

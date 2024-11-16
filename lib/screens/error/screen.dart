@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frog/l10n/l10n.dart';
+import 'package:healtheye/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class AppErrorScreen extends StatelessWidget {

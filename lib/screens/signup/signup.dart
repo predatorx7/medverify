@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frog/feature/auth/auth.dart';
-import 'package:frog/screens/signup/signup_notifier.dart';
+import 'package:healtheye/feature/auth/auth.dart';
+import 'package:healtheye/screens/signup/signup_notifier.dart';
 import 'package:go_router/go_router.dart';
 
 class _Navigation {
@@ -28,6 +28,7 @@ class SignupScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(signupNotifierProvider);
     final notifier = ref.read(signupNotifierProvider.notifier);
+    final authState = ref.watch(authProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -37,10 +38,15 @@ class SignupScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 700),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
                 child: Text(
-                  notifier.verificationTexts[state.currentTextIndex],
-                  key: ValueKey<int>(state.currentTextIndex),
+                  authState.isProcessing
+                      ? 'Fetching your wallet credentials from secure storage'
+                      : notifier.verificationTexts[state.currentTextIndex],
+                  key: ValueKey<int>(
+                      authState.isProcessing ? 10000 : state.currentTextIndex),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),

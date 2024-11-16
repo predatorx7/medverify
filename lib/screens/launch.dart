@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frog/feature/auth/auth.dart';
-import 'package:frog/screens/dashboard.dart';
-import 'package:frog/screens/welcome.dart';
+import 'package:healtheye/feature/auth/auth.dart';
+import 'package:healtheye/screens/dashboard.dart';
+import 'package:healtheye/screens/welcome.dart';
 import 'package:go_router/go_router.dart';
 
 class _Navigation {

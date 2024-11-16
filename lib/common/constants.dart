@@ -1,1 +1,1 @@
-const String appName = 'MedVerify';
+const String appName = 'HealthEye';
