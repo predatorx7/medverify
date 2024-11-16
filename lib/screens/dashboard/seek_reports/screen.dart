@@ -27,17 +27,18 @@ class SeekReportsScreen extends ConsumerStatefulWidget {
 
 class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
   Timer? _pollTimer;
-  final attestationId = generateAttestationId();
+  final referenceId = generateAttestationId();
   bool _isPolling = false;
 
   String? get publicKey => ref.watch(authProvider).keys?.publicKey;
 
   // Combine public key and attestation ID with # separator
-  String get qrData => '$publicKey#$attestationId';
+  String get qrData => '$publicKey#$referenceId';
 
   @override
   void initState() {
     super.initState();
+    print({'SeekReportsScreen.initState': 'initState'});
     _startPolling();
   }
 
@@ -51,29 +52,43 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
     setState(() {
       _isPolling = true;
     });
+    print({'SeekReportsScreen._startPolling': 'startPolling'});
     // Poll every 5 seconds
     _pollTimer =
         Timer.periodic(const Duration(seconds: 5), (_) => _checkReports());
   }
 
+  dynamic sharedResult = null;
+
   Future<void> _checkReports() async {
+    print({
+      'SeekReportsScreen._checkReports': 'checkReports',
+      'publicKey': publicKey
+    });
     if (publicKey == null) return;
 
     try {
-      final response = await http.post(
-        Uri.parse('https://api.reclaimprotocol.org/check_reports'),
+      final response = await http.get(
+        Uri.parse(
+            '${String.fromEnvironment('RECLAIM_BACKEND_URL', defaultValue: 'https://aa40-27-131-162-179.ngrok-free.app')}/api/status?referenceId=$referenceId'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'publicKey': publicKey,
-          'attestationId': attestationId,
-        }),
       );
-
+      print({
+        'SeekReportsScreen._checkReports': 'response',
+        'response': response.statusCode,
+        'body': response.body,
+      });
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
-        if (result['result'] == true) {
+        if (result['status'] == "success") {
+          sharedResult = result;
           _pollTimer?.cancel(); // Stop polling once we get a true response
           onReceiveReport();
+          Future.microtask(() {
+            if (mounted) {
+              setState(() {});
+            }
+          });
         }
       }
     } catch (e) {

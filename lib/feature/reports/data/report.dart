@@ -56,15 +56,14 @@ class Report {
       final publicKey = auth.publicKey ??
           "0x925978064717107d621d0fb2c8e68b8809f8cfd8b046c84d0fee6b68cbc5f68e";
       final response = await _reportAdditionClient.post(
-        Uri.parse(String.fromEnvironment('RECLAIM_ATTESTATION_CALLBACK_URL',
-            defaultValue:
-                'https://d07a-49-237-11-168.ngrok-free.app/api/remoteAttestation')),
+        Uri.parse(
+            "${String.fromEnvironment('RECLAIM_BACKEND_URL', defaultValue: 'https://aa40-27-131-162-179.ngrok-free.app')}/api/signAttestion"),
         body: json.encode({
           "imgProof": file.attestationOutput.toJson(),
           "aiProof": document.attestationOutput.toJson(),
           "fromAddress": publicKey,
           "toAddress": recipientResponse.receiverId,
-          "attestationId": recipientResponse.attestationId,
+          "referenceId": recipientResponse.attestationId,
         }),
       );
       $logger.child('shareProof').info({

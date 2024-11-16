@@ -20,13 +20,19 @@ class _Navigation {
   );
 }
 
-class ReportsScreen extends ConsumerWidget {
+class ReportsScreen extends ConsumerStatefulWidget {
   const ReportsScreen({super.key});
 
   static final navigation = _Navigation();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends ConsumerState<ReportsScreen> {
+  bool _loading = false;
+  @override
+  Widget build(BuildContext context) {
     final reportId = GoRouterState.of(context).pathParameters['report_id']!;
     final report = ref
         .watch(userReportsProvider)
@@ -54,9 +60,24 @@ class ReportsScreen extends ConsumerWidget {
                 onReports: (
                   ({String attestationId, String receiverId}) value,
                 ) async {
-                  print({'ShareReportsSection.value': value});
-                  final success =
-                      report.shareProof(ref.read(authProvider.notifier), value);
+                  try {
+                    if (_loading) return;
+                    _loading = true;
+                    print({'ShareReportsSection.value': value});
+                    final success = await report.shareProof(
+                        ref.read(authProvider.notifier), value);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Proof shared'),
+                      ),
+                    );
+                  } catch (e, s) {
+                    // TODO
+                  }
+                  _loading = false;
+                  setState(() {
+                    //
+                  });
                 },
               ),
               const SizedBox(height: 16),
