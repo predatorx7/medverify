@@ -65,6 +65,7 @@ dependencies:
   pointycastle: ^3.9.1
   dio: ^5.7.0
   mobile_scanner: ^6.0.2
+  square_progress_indicator: ^0.0.7
 
 dev_dependencies:
   flutter_test:

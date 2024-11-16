@@ -170,6 +170,8 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
     }
   }
 
+  bool _isVerifying = false;
+
   void startVerification() async {
     final url = _urlController.text.trim();
     if (url.isEmpty) {
@@ -180,12 +182,31 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
       );
       return;
     }
-    final _recentlyVerifiedFile = await startFileVerification(url);
-    await startDocumentVerification(url, _recentlyVerifiedFile);
+
+    setState(() {
+      _isVerifying = true;
+    });
+
+    try {
+      final _recentlyVerifiedFile = await startFileVerification(url);
+      await startDocumentVerification(url, _recentlyVerifiedFile);
+    } catch (e, s) {
+      $logger.severe('Error during verification', e, s);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10nFirebase.unknownError),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isVerifying = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    _isVerifying = true;
     return SliverPadding(
       padding: const EdgeInsets.all(16.0),
       sliver: SliverMainAxisGroup(
@@ -206,11 +227,48 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
               animation: _urlController,
               builder: (context, snapshot) {
                 final url = _urlController.text.trim();
-                return FilledButton.icon(
-                  onPressed:
-                      !UrlValidator.isValid(url) ? null : startVerification,
-                  icon: const Icon(Icons.verified),
-                  label: const Text('Verify and Link Document'),
+                return Container(
+                  decoration: _isVerifying
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(
+                            color: Colors.transparent,
+                            width: 2,
+                          ),
+                        )
+                      : null,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(28),
+                    child: Stack(
+                      children: [
+                        FilledButton.tonal(
+                          onPressed:
+                              (_isVerifying || !UrlValidator.isValid(url))
+                                  ? null
+                                  : startVerification,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.verified),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              const Text('Add Medical Report'),
+                            ],
+                          ),
+                        ),
+                        if (_isVerifying)
+                          Positioned.fill(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
@@ -361,15 +419,7 @@ class MedicalReportUrlInput extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: UrlTextField(controller: controller),
-            ),
-            const SizedBox(width: 8),
-            PasteButton(controller: controller),
-          ],
-        ),
+        UrlTextField(controller: controller),
       ],
     );
   }
