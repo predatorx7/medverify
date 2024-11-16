@@ -13,16 +13,36 @@ class _Navigation {
   );
 }
 
-class SeekReportsScreen extends ConsumerWidget {
+class SeekReportsScreen extends ConsumerStatefulWidget {
   const SeekReportsScreen({super.key});
 
   static final navigation = _Navigation();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final auth = ref.watch(authProvider);
-    final publicKey = auth.keys?.publicKey;
+  ConsumerState<SeekReportsScreen> createState() => _SeekReportsScreenState();
+}
 
+class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
+  final attestationId = generateAttestationId();
+
+  String? get publicKey => ref.watch(authProvider).keys?.publicKey;
+
+  // Combine public key and attestation ID with # separator
+  String get qrData => '$publicKey#$attestationId';
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  
+
+  void onReceiveReport() {
+    // TODO: Implement
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (publicKey == null) {
       return const Scaffold(
         body: Center(
@@ -30,11 +50,6 @@ class SeekReportsScreen extends ConsumerWidget {
         ),
       );
     }
-
-    final attestationId = generateAttestationId();
-
-    // Combine public key and attestation ID with # separator
-    final qrData = '$publicKey#$attestationId';
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +72,7 @@ class SeekReportsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Scan this QR code to share reports',
+              'Scan this QR code to share reports with me',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),

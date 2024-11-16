@@ -206,7 +206,6 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
 
   @override
   Widget build(BuildContext context) {
-    _isVerifying = true;
     return SliverPadding(
       padding: const EdgeInsets.all(16.0),
       sliver: SliverMainAxisGroup(
@@ -285,18 +284,23 @@ class UserReportsListSliver extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reports = ref.watch(userReportsProvider);
-    return SliverGrid.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        childAspectRatio: 1.5,
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      sliver: SliverGrid.builder(
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 300,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: 0.85,
+        ),
+        itemCount: reports.length,
+        itemBuilder: (context, index) {
+          final report = reports[index];
+          return ReportCard(
+            report: report,
+          );
+        },
       ),
-      itemCount: reports.length,
-      itemBuilder: (context, index) {
-        final report = reports[index];
-        return ReportCard(
-          report: report,
-        );
-      },
     );
   }
 }
@@ -308,21 +312,58 @@ class ReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        context.goNamed('report', pathParameters: {
-          'report_id': report.id,
-        });
-      },
-      child: GridTile(
-        header: GridTileBar(
-          title: Text(report.title),
-          subtitle: Text(report.description),
-        ),
-        footer: Text(DateFormat('dd MMM, yyyy').format(report.createdAt)),
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Image.memory(base64.decode(report.file.base64Data)),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      elevation: 2,
+      margin: const EdgeInsets.all(8),
+      child: InkWell(
+        onTap: () {
+          context.goNamed('report', pathParameters: {
+            'report_id': report.id,
+          });
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                ),
+                child: Center(
+                  child: Image.memory(
+                    base64.decode(report.file.base64Data),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    report.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    DateFormat('dd MMM, yyyy').format(report.createdAt),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colorScheme.outline,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -454,29 +495,6 @@ class UrlTextField extends StatelessWidget {
         }
         return null;
       },
-    );
-  }
-}
-
-class PasteButton extends StatelessWidget {
-  final TextEditingController controller;
-
-  const PasteButton({
-    super.key,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton.filled(
-      onPressed: () async {
-        final data = await Clipboard.getData('text/plain');
-        if (data?.text?.isNotEmpty == true) {
-          controller.text = data!.text!;
-        }
-      },
-      icon: const Icon(Icons.paste),
-      tooltip: 'Paste from clipboard',
     );
   }
 }
