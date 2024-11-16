@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healtheye/feature/auth/auth.dart';
+import 'package:healtheye/feature/reports/data/report.dart';
 import 'package:healtheye/feature/reports/reports.dart';
-import 'package:healtheye/screens/dashboard/reports/share_reports/screen.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class _Navigation {
@@ -56,27 +56,50 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              ShareReportsSection(
-                onReports: (ShareReportsResponse value) async {
-                  try {
-                    if (_loading) return;
-                    _loading = true;
-                    print({'ShareReportsSection.value': value});
-                    final success = await report.shareProof(
-                        ref.read(authProvider.notifier), value);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Proof shared'),
+              Stack(
+                fit: StackFit.passthrough,
+                children: [
+                  ShareReportsSection(
+                    onReports: (ShareReportsResponse value) async {
+                      try {
+                        if (_loading) return;
+                        _loading = true;
+                        print({'ShareReportsSection.value': value});
+                        final success = await report.shareProof(
+                            ref.read(authProvider.notifier), value);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Proof shared'),
+                          ),
+                        );
+                      } catch (e, s) {
+                        // TODO
+                      }
+                      _loading = false;
+                      setState(() {
+                        //
+                      });
+                    },
+                  ),
+                  if (_loading)
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            value: null,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Sharing proof of this report..',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
                       ),
-                    );
-                  } catch (e, s) {
-                    // TODO
-                  }
-                  _loading = false;
-                  setState(() {
-                    //
-                  });
-                },
+                    ),
+                ],
               ),
               const SizedBox(height: 16),
               Text(

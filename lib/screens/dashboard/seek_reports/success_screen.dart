@@ -3,19 +3,21 @@ import 'package:go_router/go_router.dart';
 import 'package:healtheye/logging.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import 'screen.dart';
+
 class SeekReportsSuccessScreen extends StatelessWidget {
   const SeekReportsSuccessScreen({super.key});
 
   static final route = GoRoute(
-    path: 'success',
+    path: 'success/:attestorId',
     name: 'seek-reports-success',
     builder: (context, state) => const SeekReportsSuccessScreen(),
   );
 
   @override
   Widget build(BuildContext context) {
-    final attestorId =
-        GoRouterState.of(context).uri.queryParameters['attestorId'];
+    final attestorId = GoRouterState.of(context).pathParameters['attestorId'] ??
+        sharedAttestorId;
 
     return Scaffold(
       appBar: AppBar(

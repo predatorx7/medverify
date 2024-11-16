@@ -6,6 +6,7 @@ import 'package:healtheye/screens/welcome.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
+  debugLogDiagnostics: true,
   refreshListenable: authChangeNotifier,
   routes: [
     // the root route

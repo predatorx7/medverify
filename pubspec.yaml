@@ -67,6 +67,7 @@ dependencies:
   mobile_scanner: ^6.0.2
   square_progress_indicator: ^0.0.7
   url_launcher: ^6.3.1
+  mutex: ^3.1.0
 
 dev_dependencies:
   flutter_test:

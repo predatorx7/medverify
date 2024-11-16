@@ -32,7 +32,7 @@ class SignupNotifier extends AutoDisposeNotifier<SignupState> {
     state = state.copyWith(isAnimating: true);
 
     for (int i = 0; i < verificationTexts.length; i++) {
-      await Future.delayed(const Duration(milliseconds: 700));
+      await Future.delayed(const Duration(milliseconds: 800));
 
       state = state.copyWith(
         currentTextIndex: i,

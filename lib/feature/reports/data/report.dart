@@ -3,10 +3,15 @@ import 'dart:convert';
 import 'package:healtheye/feature/auth/auth.dart';
 import 'package:healtheye/feature/link/link_document.dart';
 import 'package:healtheye/logging.dart';
-import 'package:healtheye/screens/dashboard/reports/share_reports/screen.dart';
 import 'package:http/http.dart';
 
 final _reportAdditionClient = Client();
+
+typedef ShareReportsResponse = ({
+  String attestationId,
+  String publicJWK,
+  String receiverId
+});
 
 class Report {
   final String id;

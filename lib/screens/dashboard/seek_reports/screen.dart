@@ -31,6 +31,8 @@ class SeekReportsScreen extends ConsumerStatefulWidget {
   ConsumerState<SeekReportsScreen> createState() => _SeekReportsScreenState();
 }
 
+dynamic sharedAttestorId = null;
+
 class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
   Timer? _pollTimer;
   final referenceId = generateAttestationId();
@@ -68,6 +70,8 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
 
   dynamic sharedResult = null;
 
+  bool isPending = false;
+
   Future<void> _checkReports() async {
     print({
       'SeekReportsScreen._checkReports': 'checkReports',
@@ -98,6 +102,13 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
             }
           });
         }
+        final status = sharedResult['status'];
+        Future.microtask(() {
+          if (!mounted) return;
+          setState(() {
+            isPending = status == 'pending';
+          });
+        });
       }
     } catch (e) {
       debugPrint('Error checking reports: $e');
@@ -108,12 +119,11 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
     setState(() {
       _isPolling = false;
     });
-
+    sharedAttestorId = sharedResult['attestorId'];
     if (sharedResult != null && mounted) {
       // Navigate to success or failure page based on the result
       if (sharedResult['status'] == 'success') {
-        context.go(
-            '/dashboard/seek/success?attestorId=${sharedResult['attestorId']}');
+        context.go('/dashboard/seek/success/${sharedResult['attestorId']}');
       } else {
         context.go('/dashboard/seek/failure');
       }
@@ -164,10 +174,14 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
             ),
             if (_isPolling) ...[
               const SizedBox(height: 24),
-              const CircularProgressIndicator(),
+              CircularProgressIndicator(
+                value: isPending ? 0.6 : null,
+              ),
               const SizedBox(height: 16),
               Text(
-                'Waiting for reports to be shared...',
+                isPending
+                    ? 'Waiting for a report to be processed..'
+                    : 'Waiting for reports to be shared...',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey[600],
                     ),

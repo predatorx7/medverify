@@ -30,6 +30,11 @@ class SignupScreen extends ConsumerWidget {
     final notifier = ref.read(signupNotifierProvider.notifier);
     final authState = ref.watch(authProvider);
 
+    final lineHeight = MediaQuery.of(context)
+            .textScaler
+            .scale(Theme.of(context).textTheme.titleLarge?.fontSize ?? 20) *
+        (Theme.of(context).textTheme.titleLarge?.height ?? 1.2);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -38,19 +43,25 @@ class SignupScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 700),
+                duration: Durations.medium4,
                 switchInCurve: Curves.easeIn,
                 switchOutCurve: Curves.easeOut,
-                child: Text(
-                  authState.isProcessing
-                      ? 'Fetching your wallet credentials from secure storage'
-                      : notifier.verificationTexts[state.currentTextIndex],
-                  key: ValueKey<int>(
-                      authState.isProcessing ? 10000 : state.currentTextIndex),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                  textAlign: TextAlign.center,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(
+                    height: lineHeight * 2,
+                  ),
+                  child: Text(
+                    authState.isProcessing
+                        ? 'Fetching your wallet credentials from secure storage'
+                        : notifier.verificationTexts[state.currentTextIndex],
+                    key: ValueKey<int>(authState.isProcessing
+                        ? 10000
+                        : state.currentTextIndex),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
               const SizedBox(height: 48),
