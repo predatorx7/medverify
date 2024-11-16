@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:healtheye/components/you_qr.dart';
 import 'package:healtheye/data/user.dart';
 import 'package:healtheye/feature/auth/auth.dart';
 import 'package:healtheye/feature/link/link_document.dart';
@@ -125,7 +124,7 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
     $logger.child('_onFileVerificationUpdate').info(update.file);
   }
 
-  Future<void> startFileVerification(String url) async {
+  Future<VerifiedFile> startFileVerification(String url) async {
     final log = $logger.child('startVerification');
     final sm = ScaffoldMessenger.of(context);
     final linkDocumentService = ref.read(linkDocumentServiceProvider);
@@ -137,6 +136,7 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
         _recentlyVerifiedFile = file;
       });
       sm.showSnackBar(SnackBar(content: Text('File verified')));
+      return file;
     } catch (e, s) {
       log.severe('Error during verification', e, s);
       sm.showSnackBar(SnackBar(content: Text(e.toString())));
@@ -170,6 +170,20 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
     }
   }
 
+  void startVerification() async {
+    final url = _urlController.text.trim();
+    if (url.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.makeSureUrlIsValid),
+        ),
+      );
+      return;
+    }
+    final _recentlyVerifiedFile = await startFileVerification(url);
+    await startDocumentVerification(url, _recentlyVerifiedFile);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
@@ -193,23 +207,8 @@ class _LinkReportsSectionState extends ConsumerState<LinkReportsSectionSliver> {
               builder: (context, snapshot) {
                 final url = _urlController.text.trim();
                 return FilledButton.icon(
-                  onPressed: !UrlValidator.isValid(url)
-                      ? null
-                      : () {
-                          final url = _urlController.text.trim();
-                          if (url.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(context.l10n.makeSureUrlIsValid),
-                              ),
-                            );
-                            return;
-                          }
-                          startFileVerification(url).then((_) {
-                            startDocumentVerification(
-                                url, _recentlyVerifiedFile!);
-                          });
-                        },
+                  onPressed:
+                      !UrlValidator.isValid(url) ? null : startVerification,
                   icon: const Icon(Icons.verified),
                   label: const Text('Verify and Link Document'),
                 );
