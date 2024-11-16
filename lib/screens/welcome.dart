@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:healtheye/feature/auth/auth.dart';
 import 'package:healtheye/screens/signup/signup.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,6 +8,13 @@ class _Navigation {
   final route = GoRoute(
     path: '/welcome',
     name: 'welcome',
+    redirect: (context, state) {
+      final authState = ProviderScope.containerOf(context).read(authProvider);
+      if (!authState.isAuthenticated) {
+        return null;
+      }
+      return '/dashboard';
+    },
     builder: (context, state) => const WelcomeScreen(),
   );
 }
