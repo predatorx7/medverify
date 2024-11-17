@@ -95,19 +95,20 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
         if (result['status'] == "success") {
           sharedResult = result;
           _pollTimer?.cancel(); // Stop polling once we get a true response
-          onReceiveReport();
+          onReceiveReport(result);
           Future.microtask(() {
             if (mounted) {
               setState(() {});
             }
           });
         }
-        final status = sharedResult['status'];
-        Future.microtask(() {
-          if (!mounted) return;
-          setState(() {
-            isPending = status == 'pending';
-          });
+        final status =
+            sharedResult is Map && (sharedResult as Map).containsKey('status')
+                ? sharedResult['status']
+                : null;
+        if (!mounted) return;
+        setState(() {
+          isPending = status == 'pending';
         });
       }
     } catch (e) {
@@ -115,15 +116,15 @@ class _SeekReportsScreenState extends ConsumerState<SeekReportsScreen> {
     }
   }
 
-  void onReceiveReport() {
+  void onReceiveReport(dynamic result) {
     setState(() {
       _isPolling = false;
     });
-    sharedAttestorId = sharedResult['attestorId'];
+    sharedAttestorId = sharedResult['attestationId'];
     if (sharedResult != null && mounted) {
       // Navigate to success or failure page based on the result
       if (sharedResult['status'] == 'success') {
-        context.go('/dashboard/seek/success/${sharedResult['attestorId']}');
+        context.go('/dashboard/seek/success/${sharedResult['attestationId']}');
       } else {
         context.go('/dashboard/seek/failure');
       }
